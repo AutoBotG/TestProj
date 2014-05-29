@@ -11,6 +11,7 @@ require 'selenium/webdriver'
 require 'browsermob/proxy'
 require 'browsermob/proxy/webdriver_listener'
 require 'json'
+require 'httparty'
 require File.dirname(__FILE__) +  '/tesco_browser_mob'
 require File.dirname(__FILE__) +  '/store_hars'
 
@@ -27,8 +28,8 @@ proxy_listener =  BrowserMob::Proxy::WebDriverListener.new(proxy)
   end
 
 at_exit do
-  #proxy_listener.hars.each {|data| data.save_to "goo.har"}
-  proxy_listener.hars.each {|data| @hars_collection.insert(JSON.parse(data.to_json))}
+  #proxy_listener.hars.each_with_index {|data,index| data.save_to "goo#{index}.har"}
+  proxy_listener.hars.each {|data|   HarStorage.upload(data)}
   proxy.close
   server.stop
 end
