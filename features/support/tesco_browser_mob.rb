@@ -24,9 +24,28 @@ module BrowserMob
       end
 
       def before_navigate_to(url, driver)
-        save_har if har_present # first request
-        @client.new_har("navigate-to-#{url}", @new_har_opts)
+       # save_har if har_present # first request
         @current_url = url
+        name = "navigate-to-#{url}"
+        @client.new_har("navigate-to-#{url}", @new_har_opts)
+        @client.new_page name
+
+      end
+
+      def after_navigate_to(url, driver)
+        save_har if har_present && url != 'about:blank'
+      end
+
+      def after_click(element, driver)
+        save_har
+      end
+
+
+
+      def before_click(element, driver)
+        @client.new_har("click-element-#{@current_url}", @new_har_opts)
+        name = "click-element-#{identifier_for element}_in#{@current_url}"
+        @client.new_page name
       end
 
       def before_quit(driver)
